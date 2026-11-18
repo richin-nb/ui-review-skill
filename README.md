@@ -1,22 +1,33 @@
-# ui-review: a Claude Code skill
+# ui-review: an agent skill for UI reviews
 
-Claude goes through every screen of your running web app on a laptop and a
-phone. It then publishes a review page. Each finding on the page has:
+Your AI coding agent goes through every screen of your running web app on a
+laptop and a phone. It then builds a review page. Each finding on the page
+has:
 
 - a screenshot of the screen now, with the problem circled in red;
 - a mock-up of the fix, with the change outlined in green;
 - what's wrong, why it matters, the planned fix and an alternative;
 - **Accept fix**, **Use alternative** and **Something else** buttons.
 
-Your choices save to the page. Claude reads them back, builds what you
-accepted, then reviews every screen again.
+You pick a choice for each finding. The agent reads your choices back,
+builds what you accepted, then reviews every screen again.
+
+## Tested on
+
+So far this skill has only been tested with **Claude Code**. It uses the
+standard Agent Skills format (`SKILL.md`), and its scripts are plain Node
+and Python, so it should work with other agents that read Agent Skills
+(Codex, Cursor and others). Reports from other agents are welcome.
+
+Parts marked **[Claude only]** below need Claude. Everything else works
+with any agent.
 
 ## Install
 
-In Claude Code:
+### Claude Code
 
 ```
-/plugin marketplace add <github-user>/claude-ui-review
+/plugin marketplace add richin-nb/ui-review-skill
 /plugin install ui-review@neurabyte-ui-review
 ```
 
@@ -25,9 +36,14 @@ Restart Claude Code, then ask: "Review the UI of this app", or run `/ui-review`.
 To try a local copy without GitHub:
 
 ```
-/plugin marketplace add /path/to/claude-ui-review
+/plugin marketplace add /path/to/ui-review-skill
 /plugin install ui-review@neurabyte-ui-review
 ```
+
+### Other agents (untested)
+
+Copy the `skills/ui-review/` folder into your agent's skills folder, then
+ask it to review the UI of your app.
 
 ## Needs
 
@@ -37,15 +53,26 @@ To try a local copy without GitHub:
   playwright-core` if Chrome is installed; otherwise `npm i -D playwright &&
   npx playwright install chromium`.
 - Python 3 (standard library only).
-- Optional: claude.ai Artifacts, so the review page is hosted and your
-  choices save to it. Without Artifacts you get an HTML file, and you send
-  your choices back with its "Copy my choices" button.
+
+## What works where
+
+| Part | Works with |
+| --- | --- |
+| Surveying every screen, circling problems, drawing mock-ups | Any agent |
+| Building the review page (`report/index.html`) | Any agent |
+| Choices saved in your browser, sent back with "Copy my choices" | Any agent |
+| Hosted review page, with choices saved to the page itself | **[Claude only]** needs claude.ai Artifacts |
+| Agent reads your choices straight from the page | **[Claude only]** needs claude.ai Artifacts |
+| `/plugin` install and updates | **[Claude only]** Claude Code plugin system |
+
+Without Artifacts, open `report/index.html` in a browser, make your
+choices, press "Copy my choices" and paste the text back to the agent.
 
 ## What's inside
 
 ```
 skills/ui-review/
-  SKILL.md                 the workflow Claude follows
+  SKILL.md                 the workflow the agent follows
   scripts/survey.mjs       full-page shots of every screen + overflow/clipping report
   scripts/shoot.mjs        one shot per finding, problem circled
   scripts/mockup.mjs       renders HTML mock-ups inside a drawing of the app shell
@@ -57,5 +84,10 @@ skills/ui-review/
 ## Update
 
 Bump `version` in `.claude-plugin/plugin.json` and
-`.claude-plugin/marketplace.json`, then push. Users get the update by
-running `/plugin marketplace update neurabyte-ui-review`.
+`.claude-plugin/marketplace.json`, then push. Claude Code users get the
+update by running `/plugin marketplace update neurabyte-ui-review`. Users of
+other agents copy the folder again.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
