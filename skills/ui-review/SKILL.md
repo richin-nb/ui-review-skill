@@ -1,0 +1,121 @@
+---
+name: ui-review
+description: Review a running web app's UI screen by screen on desktop and phone, then publish a review page where each finding shows an annotated screenshot, a mock-up of the fix, and Accept / Alternative / Something-else buttons that save the owner's decision. Use when the user asks for a UI or UX review, a design audit of their app, "go through every screen", or a follow-up review round after fixes. Also builds the accepted fixes and re-reviews afterwards.
+---
+
+# UI review with decisions
+
+The output is a page the app's owner reads and decides on. Nothing in the app
+changes until they decide. Each finding pairs a real screenshot (problem
+circled in red) with a mock-up of the fix (change outlined in green), plain
+notes (what's wrong, why it matters, planned fix, alternative) and three
+buttons. Their choices save to the page, and you read them back before
+building.
+
+`SKILL_DIR` below means this skill's base directory, shown when the skill
+loads. Work in a review folder (`REVIEW`): the session scratchpad if there is
+one, otherwise `./ui-review/`. Add `ui-review/` to `.gitignore` if it is
+inside a repo.
+
+## 0. Before you start
+
+- You need the app running locally with realistic data, and a way to sign
+  in. If there's no demo data, offer to seed some first: an empty app hides
+  most problems (long lists, wrapping amounts, overdue states).
+- Need Node 18+ and Playwright: `npm i -D playwright-core` in `REVIEW` when
+  Chrome is installed, else `npm i -D playwright && npx playwright install chromium`.
+  Python 3 for the page builder (standard library only).
+- Ask only what you can't find out yourself: the URL, how to sign in, and
+  whether any area is out of scope. Find the screens from the router.
+- If the project has rules on who decides design (a CLAUDE.md, a memory),
+  follow them. By default, this review proposes and the user decides.
+
+## 1. Survey every screen
+
+1. Copy `SKILL_DIR/assets/review.example.json` to `REVIEW/review.json`. Fill
+   in `app` (name, base URL, sidebar groups for the mock-up shell) and `auth`
+   (a cookie file, a Playwright storage state, or localStorage keys).
+2. List every screen in `screens`: every route, and every state a person
+   reaches by clicking: tabs, dialogs, drawers, menus, empty and error
+   states, a record in each status (draft, issued, overdue, void). Use
+   `steps` to click into them.
+3. Run `node SKILL_DIR/scripts/survey.mjs REVIEW`. It writes full-page
+   shots for desktop and phone to `REVIEW/raw/`, and `raw/survey.json` with
+   sideways overflow, clipped text and console errors per screen.
+
+## 2. Look at every screenshot
+
+Open every image in `raw/` and read `survey.json`. Check the screens against
+`SKILL_DIR/references/checklist.md`, including every form field. Note each
+problem with the screen, the size (phone, desktop, both) and the exact text
+on screen.
+
+With more than about 20 screens, split them between a few parallel helpers
+(forks or subagents), each with a list of image paths and the checklist. Ask
+each to return findings in the `findings.json` item shape. Then merge the
+results, remove duplicates, and check each claim against the image yourself.
+
+Group findings by area, problems that span pages first ("Across the app").
+Set the severity sparingly (see `references/writing.md`).
+
+## 3. Circle each problem
+
+Write `REVIEW/shots.json` (see `SKILL_DIR/assets/shots.example.json` and the
+header of `scripts/shoot.mjs`), one entry per screenshot, with targets for
+what to circle. Run `node SKILL_DIR/scripts/shoot.mjs REVIEW`. Fix any `MISS`
+line and re-run just that id. Then **open every image** and check that the
+circle is on the problem. When a selector can't reach it (canvas, a very
+long page), draw the box on a `raw/` shot with Pillow instead.
+
+## 4. Draw each fix
+
+For each finding write `REVIEW/mockups/<id>.html`: plain HTML using the kit
+classes in `SKILL_DIR/assets/kit.css` (`card`, `row`, `btn`, `chip`, `badge`,
+`tbl`, `tabs`, `seg`, `input`, `switch` and others). Its first line frames
+it: `<!-- vp=desk nav=Invoices -->`, `<!-- vp=phone -->` or
+`<!-- vp=desk shell=none -->`. Wrap each change in
+`class="chg" data-tag="Short label"`. Copy `assets/theme.example.css` to
+`REVIEW/theme.css` and set the app's colours and font from its theme file.
+
+Run `node SKILL_DIR/scripts/mockup.mjs REVIEW`, then look at every image:
+labels mustn't wrap or overlap, and nothing should be cut off.
+
+## 5. Build and publish the page
+
+1. Write `REVIEW/findings.json` (format in `references/findings-format.md`,
+   tone in `references/writing.md`). Give `meta.storageKey` a unique value.
+2. Run `python3 SKILL_DIR/scripts/build.py REVIEW`. It writes
+   `REVIEW/report/index.html` and lists any missing images.
+3. Open it in a browser at desktop and phone width and check it renders.
+4. Publish:
+   - **With the Artifact tool:** publish `report/index.html` with `root` set
+     to `REVIEW/report` and `files` listing every `shots/*.jpg` and
+     `fixes/*.jpg`. Pass `capabilities: {"db": {}, "user": {}}` so choices
+     save to the page's database, in the collection `decisions`.
+   - **Without it:** give the user the HTML file. Choices then save in their
+     browser only, and the "Copy my choices" button gives them text to paste
+     back to you.
+5. Tell the user the link, the number of findings at each level, and the
+   items in the "Fix these first" list. Note what you deliberately left out.
+
+## 6. Read the decisions and build
+
+- Read the `decisions` collection from the artifact's database: one document
+  per finding id, `{choice: accept|alt|custom, note}`. Or read the pasted
+  "Copy my choices" text. Where a custom note is a question rather than an
+  instruction, answer it and confirm before building that item.
+- Record the decisions where the project keeps them (a decision log, a
+  memory file) before you build.
+- Build the fixes, highest severity first. Follow the project's own rules:
+  where UI text lives, tests, the quality gate. Shoot each fixed screen at
+  both sizes and compare it with the mock-up.
+- Where the built version has to differ from the accepted mock-up, say so
+  and why. Don't quietly change the design.
+
+## 7. Review again
+
+After the fixes, run the survey again on every screen, not just the changed
+ones. Fix any regressions, and gaps in your own work, without asking. Put
+anything that is a new design choice on a new review page ("round 2"), with
+a new `storageKey`, and a "Fixed during this pass" list in `strengths`.
+Then repeat from step 6.

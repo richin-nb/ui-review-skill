@@ -1,0 +1,13 @@
+{
+  "name": "neurabyte-ui-review",
+  "owner": { "name": "NeuraByte" },
+  "plugins": [
+    {
+      "name": "ui-review",
+      "source": "./",
+      "version": "1.0.0",
+      "category": "design",
+      "description": "Screen-by-screen UI review with annotated screenshots, mock-ups of each fix, and a decision page."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "Acme Billing",
+    "user": "Admin",
+    "baseUrl": "http://localhost:5173",
+    "nav": [["Overview", ["Dashboard"]], ["Billing", ["Invoices", "Clients"]], ["Admin", ["Settings"]]]
+  },
+  "auth": {
+    "cookieFile": "cookie.txt",
+    "storageState": null,
+    "localStorage": {}
+  },
+  "viewports": {
+    "desk": { "width": 1440, "height": 900 },
+    "phone": { "width": 390, "height": 844, "scale": 2 }
+  },
+  "screens": [
+    { "id": "login", "url": "/login", "anon": true },
+    { "id": "dashboard", "url": "/dashboard" },
+    { "id": "dashboard-taxes", "url": "/dashboard", "steps": [{ "clickRole": ["tab", "Taxes"] }] },
+    { "id": "invoices", "url": "/invoices" },
+    { "id": "invoice-new", "url": "/invoices", "steps": [{ "clickRole": ["button", "New invoice"] }] },
+    { "id": "settings", "url": "/settings", "viewports": ["desk"] }
+  ]
+}

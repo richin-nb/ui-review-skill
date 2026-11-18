@@ -1,0 +1,7 @@
+{
+  "name": "ui-review",
+  "version": "1.0.0",
+  "description": "Review a running web app's UI on desktop and phone, and publish a review page with annotated screenshots, mock-ups of each fix, and decision buttons the owner uses before anything is built.",
+  "author": { "name": "NeuraByte" },
+  "keywords": ["ui", "ux", "design-review", "playwright", "screenshots", "mock-ups"]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Acme UI Review",
+    "eyebrow": "Design review · 18 November 2026",
+    "h1": "Acme Billing UI review",
+    "intro": "I went through every page and window on a laptop screen and on a phone. Each finding shows the screen now (problem circled in red) next to a mock-up of the fix (change outlined in green). Under each one, pick <b>Accept fix</b>, the <b>alternative</b>, or write <b>something else</b>. I read your choices from this page before building.",
+    "scope": [[24, "screens"], [48, "screenshots (laptop 1440 px and phone 390 px)"]],
+    "firstHead": "Fix these first",
+    "firstSeverity": "first",
+    "strengthsHead": "What already works well",
+    "strengths": ["The phone version of the Invoices list (one card per invoice) is the right pattern; other lists should copy it."],
+    "foot": "Screenshots come from a demo copy with made-up data. The “after” pictures are mock-ups: some names and figures in them are made up to show the idea.",
+    "storageKey": "acme-ui-review-1"
+  },
+  "areas": [
+    {
+      "key": "across", "name": "Across the app", "intro": "Problems that show up on several pages.",
+      "items": [
+        {
+          "id": "tabs", "title": "Tabs are cut off on a phone", "sev": "soon", "device": "phone",
+          "shots": ["tabs-phone"],
+          "wrong": "On a phone, the tab row runs off the right edge: the dashboard shows “Taxes anc”.",
+          "why": "Nothing tells you there is more to the side, so people don't find the hidden tab.",
+          "fix": "Shorter tab names on a phone, and a fade at the edge when they still don't fit.",
+          "alt": "Replace the tabs with one dropdown on a phone."
+        }
+      ]
+    }
+  ]
+}

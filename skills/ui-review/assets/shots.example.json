@@ -1,0 +1,7 @@
+[
+  { "id": "tabs-phone", "vp": "phone", "url": "/dashboard", "marks": [{ "css": "[role=tablist]" }] },
+  { "id": "red-action", "vp": "desk", "url": "/invoices", "marks": [{ "role": ["button", "Send reminders"] }] },
+  { "id": "mixed-formats", "vp": "desk", "url": "/invoices", "marks": [{ "text": "$6,000.00" }, { "text": "7.200,00 €", "n": 1 }], "union": true },
+  { "id": "tax-bar", "vp": "desk", "url": "/dashboard", "steps": [{ "clickRole": ["tab", "Taxes"] }], "marks": [{ "text": "Tax to set aside" }], "card": true },
+  { "id": "long-list", "vp": "desk", "url": "/bank", "marks": [{ "text": "154 lines" }], "full": true }
+]

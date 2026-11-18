@@ -1,0 +1,9 @@
+/* Copy to <reviewDir>/theme.css and set these from the app's own theme file
+   (or sample them from a screenshot) so the mock-ups look like the app. */
+:root {
+  --font: Inter, system-ui, sans-serif;
+  --page: #f3f4f6; --card: #ffffff;
+  --chrome-from: #0b1a1f; --chrome-to: #11272d;
+  --accent: #09e1a0; --accent-ink: #06261c; --accent-tint: #e6f7f1; --accent-text: #036048;
+  --primary: #11272d; --on-primary: #ffffff;
+}
