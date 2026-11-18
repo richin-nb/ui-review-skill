@@ -1,6 +1,11 @@
 ---
 name: ui-review
-description: Review a running web app's UI screen by screen on desktop and phone, then publish a review page where each finding shows an annotated screenshot, a mock-up of the fix, and Accept / Alternative / Something-else buttons that save the owner's decision. Use when the user asks for a UI or UX review, a design audit of their app, "go through every screen", or a follow-up review round after fixes. Also builds the accepted fixes and re-reviews afterwards.
+description: Reviews a running web app's UI on desktop and phone and publishes annotated screenshots with fix mock-ups to accept or reject. Use for a UI/UX review, design audit, or "go through every screen".
+license: MIT
+metadata:
+  author: Richin Abraham
+  version: "1.0.0"
+  tags: [ui, ux, design-review, playwright, screenshots]
 ---
 
 # UI review with decisions
@@ -12,12 +17,25 @@ notes (what's wrong, why it matters, planned fix, alternative) and three
 buttons. Their choices save to the page, and you read them back before
 building.
 
+## Purpose
+
+Use this skill when the user wants:
+
+- a UI or UX review, or a design audit, of a web app they run locally;
+- every screen checked on a laptop (1440 px) and a phone (390 px);
+- a page of proposed fixes they can accept, swap for an alternative, or
+  replace with their own idea before anything is built;
+- a follow-up review round after fixes.
+
+Don't use it for a static design file (Figma, an image) with no running app,
+or for a code-only review.
+
 `SKILL_DIR` below means this skill's base directory, shown when the skill
 loads. Work in a review folder (`REVIEW`): the session scratchpad if there is
 one, otherwise `./ui-review/`. Add `ui-review/` to `.gitignore` if it is
 inside a repo.
 
-## 0. Before you start
+## Prerequisites
 
 - You need the app running locally with realistic data, and a way to sign
   in. If there's no demo data, offer to seed some first: an empty app hides
@@ -29,6 +47,35 @@ inside a repo.
   whether any area is out of scope. Find the screens from the router.
 - If the project has rules on who decides design (a CLAUDE.md, a memory),
   follow them. By default, this review proposes and the user decides.
+
+## Available scripts
+
+Run each from the `REVIEW` folder, so the scripts find the Playwright
+installed there. `REVIEW` is the review folder; the optional ids limit a run
+to those entries.
+
+| Script | Purpose | Arguments |
+| --- | --- | --- |
+| `scripts/survey.mjs` | Full-page shots of every screen in `review.json`, desktop and phone, plus `raw/survey.json` (sideways overflow, clipped text, console errors) | `<REVIEW> [screenId,screenId]` |
+| `scripts/shoot.mjs` | One shot per finding from `shots.json`, problem circled in red, to `report/shots/` | `<REVIEW> [shotId,shotId]` |
+| `scripts/mockup.mjs` | Renders `mockups/<id>.html` inside a drawing of the app shell, to `report/fixes/` | `<REVIEW> [id,id]` |
+| `scripts/build.py` | Builds `report/index.html` from `findings.json`; exits 1 if an image is missing | `<REVIEW>` |
+
+### Example
+
+A full run for an app at `http://localhost:5173`:
+
+```bash
+mkdir -p ui-review && cd ui-review
+npm i -D playwright-core          # Chrome installed; else: npm i -D playwright && npx playwright install chromium
+cp SKILL_DIR/assets/review.example.json review.json      # then edit app, auth and screens
+node SKILL_DIR/scripts/survey.mjs .                       # step 1
+# step 2: look at raw/*.jpg, write shots.json and mockups/<id>.html
+node SKILL_DIR/scripts/shoot.mjs .                        # step 3
+node SKILL_DIR/scripts/shoot.mjs . tabs-phone             # re-run one shot after fixing a MISS
+node SKILL_DIR/scripts/mockup.mjs .                       # step 4
+python3 SKILL_DIR/scripts/build.py .                      # step 5 -> report/index.html
+```
 
 ## 1. Survey every screen
 
@@ -129,3 +176,35 @@ ones. Fix any regressions, and gaps in your own work, without asking. Put
 anything that is a new design choice on a new review page ("round 2"), with
 a new `storageKey`, and a "Fixed during this pass" list in `strengths`.
 Then repeat from step 6.
+
+## Limitations
+
+- Needs the app running and reachable from this machine. It can't review a
+  design file or a deployed site you can't sign in to.
+- Signs in only with a session cookie, a Playwright storage state or
+  localStorage keys. It can't complete an interactive login, SSO or 2FA:
+  the user has to provide one of those.
+- Uses Chromium only. Safari and Firefox rendering isn't checked.
+- Checks two sizes by default (1440 px desktop, 390 px phone). Add more in
+  `review.json` `viewports`.
+- Mock-ups are HTML drawn with the kit classes, not the app's own
+  components. Names and figures in them may be made up.
+- A selector can't circle a problem inside a canvas or far down a very long
+  page. Draw that box on the `raw/` shot instead.
+- Sign-out detection only checks whether the URL path contains `login`,
+  `signin` or `auth`. Apps that show a sign-in form on another path aren't
+  detected.
+- **[Claude only]** The hosted page that saves choices needs claude.ai
+  Artifacts. Tested only on Claude Code so far.
+
+## Troubleshooting
+
+| Error | Cause | Solution |
+| --- | --- | --- |
+| `Playwright not found` | Playwright isn't installed in the folder the script runs from, or globally | `cd REVIEW`, then `npm i -D playwright-core` (Chrome installed) or `npm i -D playwright && npx playwright install chromium` |
+| Browser fails to launch | No Chrome at a known path, and Playwright's Chromium isn't installed | Set `CHROME_PATH` to the Chrome binary, or run `npx playwright install chromium` |
+| `No .../review.json` | The config is missing from `REVIEW` | Copy `SKILL_DIR/assets/review.example.json` to `REVIEW/review.json` and fill it in |
+| `SIGNED OUT at <url>` | The session in `auth` is missing or expired | Get a fresh cookie or storage state, update `review.json` `auth`, and re-run |
+| `MISS <id> <target>` | `shoot.mjs` found no element for that target | Fix the target in `shots.json` (text, css, role or label), then re-run with that id |
+| `MISSING <image>` from `build.py` | A finding lists a shot or fix image that wasn't made | Run `shoot.mjs` or `mockup.mjs` for that id, or fix the id in `findings.json` |
+| Mock-up labels wrap or overlap | A `data-tag` label is too long for the space | Shorten the label, or move the change so its label has room |
