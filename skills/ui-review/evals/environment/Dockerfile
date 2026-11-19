@@ -12,4 +12,10 @@ RUN apt-get update \
 # The skill's scripts look for Playwright in the working folder, then globally.
 RUN npm install -g playwright-core@1.65.1
 
+# Agents sometimes check pages with Python Playwright. Its Chromium build
+# can differ from the Node package's, so it fetches its own.
+# SKIP_BROWSER_GC keeps the Node package's browsers from being deleted.
+RUN python -m pip install --no-cache-dir playwright==1.65.1 \
+ && PLAYWRIGHT_SKIP_BROWSER_GC=1 python -m playwright install chromium-headless-shell
+
 WORKDIR /workspace
