@@ -1,0 +1,6 @@
+schema_version: 1
+
+harbor:
+  task_source: evals_json
+  custom_dockerfile_mode: preserve
+  n_attempts: 1
