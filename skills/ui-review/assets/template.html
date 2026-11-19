@@ -230,13 +230,13 @@ dialog button { margin-top: 8px; font: 600 14px var(--body); background: var(--s
       c.hidden = !ok; if (ok) n++;
     }
     for (const a of areas) a.hidden = !a.querySelector(".finding:not([hidden])");
-    shown.textContent = n === cards.length ? "" : `${n} of ${cards.length} shown`;
+    shown.textContent = n === cards.length ? "" : n + " of " + cards.length + " shown";
     document.getElementById("empty").hidden = n > 0;
   }
   document.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
     const key = b.dataset.sev ? "sev" : b.dataset.dev ? "dev" : "dec";
     state[key] = b.dataset[key];
-    document.querySelectorAll(`.chip[data-${key}]`).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    document.querySelectorAll(".chip[data-" + key + "]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
     apply();
   }));
 
@@ -252,11 +252,11 @@ dialog button { margin-top: 8px; font: 600 14px var(--body); background: var(--s
       const st = c.querySelector(".status");
       if (!st.dataset.busy) {
         st.classList.remove("err");
-        st.textContent = d ? (d.choice === "custom" ? `Your note: “${d.note}”` : "") : "";
+        st.textContent = d ? (d.choice === "custom" ? "Your note: “" + d.note + "”" : "") : "";
       }
     }
     document.getElementById("done-n").textContent = done;
-    document.getElementById("meter").style.width = `${(done / cards.length) * 100}%`;
+    document.getElementById("meter").style.width = (done / cards.length) * 100 + "%";
     apply();
   }
 
@@ -305,7 +305,7 @@ dialog button { margin-top: 8px; font: 600 14px var(--body); background: var(--s
   document.getElementById("copy").addEventListener("click", async () => {
     const lines = cards.filter((c) => decisions[c.dataset.fid]).map((c) => {
       const d = decisions[c.dataset.fid];
-      return `${c.dataset.n}. ${c.dataset.title}: ${LABEL[d.choice]}${d.choice === "custom" ? ` - ${d.note}` : ""}`;
+      return c.dataset.n + ". " + c.dataset.title + ": " + LABEL[d.choice] + (d.choice === "custom" ? " - " + d.note : "");
     });
     const text = lines.length ? lines.join("\n") : "No choices yet.";
     const btn = document.getElementById("copy");

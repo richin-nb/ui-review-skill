@@ -27,7 +27,7 @@ for (const s of cfg.screens ?? []) {
     try {
       await p.goto(new URL(s.url, cfg.app.baseUrl).href, { waitUntil: "networkidle", timeout: 20000 }).catch(() => {});
       await sleep(s.wait ?? 1200);
-      if (signedOut(p, s)) throw new Error(`SIGNED OUT at ${p.url()}: refresh the session in review.json "auth"`);
+      if (signedOut(p, s)) throw new Error("SIGNED OUT at " + p.url() + ': refresh the session in review.json "auth"');
       for (const step of s.steps ?? []) await runStep(p, step);
       const m = await p.evaluate(() => {
         const W = innerWidth;
@@ -39,13 +39,13 @@ for (const s of cfg.screens ?? []) {
           if (clipped.length > 15) break;
         }
         const wide = [...document.querySelectorAll("body *")].filter((el) => el.getBoundingClientRect().right > W + 1 && getComputedStyle(el).position !== "fixed")
-          .slice(0, 8).map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 2).join(".")}`);
+          .slice(0, 8).map((el) => el.tagName.toLowerCase() + "." + [...el.classList].slice(0, 2).join("."));
         return { scrollWidth: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight, overflowX: document.documentElement.scrollWidth > W, clipped, wide };
       });
-      const file = `${s.id}-${vp}.jpg`;
+      const file = s.id + "-" + vp + ".jpg";
       await p.screenshot({ path: path.join(out, file), type: "jpeg", quality: 62, fullPage: true });
       report.push({ id: s.id, vp, url: s.url, file, ...m, errors: errors.slice(0, 5) });
-      console.log("ok", s.id, vp, m.overflowX ? "OVERFLOW-X" : "", m.clipped.length ? `clipped:${m.clipped.length}` : "", errors.length ? `errors:${errors.length}` : "");
+      console.log("ok", s.id, vp, m.overflowX ? "OVERFLOW-X" : "", m.clipped.length ? "clipped:" + m.clipped.length : "", errors.length ? "errors:" + errors.length : "");
     } catch (e) {
       report.push({ id: s.id, vp, url: s.url, failed: e.message.split("\n")[0] });
       console.log("FAIL", s.id, vp, e.message.split("\n")[0]);

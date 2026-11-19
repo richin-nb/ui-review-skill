@@ -26,7 +26,7 @@ const locate = (p, t) => {
   else if (t.css) l = p.locator(t.css);
   else if (t.role) l = p.getByRole(t.role[0], { name: new RegExp(t.role[1]) });
   else if (t.label) l = p.getByLabel(t.label, { exact: true });
-  else throw new Error(`Unknown target ${JSON.stringify(t)}`);
+  else throw new Error("Unknown target " + JSON.stringify(t));
   return l.nth(t.n ?? 0);
 };
 
@@ -41,7 +41,7 @@ for (const s of shots) {
   try {
     await p.goto(new URL(s.url, cfg.app.baseUrl).href, { waitUntil: "networkidle", timeout: 20000 }).catch(() => {});
     await sleep(s.wait ?? 1200);
-    if (signedOut(p, s)) throw new Error(`SIGNED OUT at ${p.url()}: refresh the session in review.json "auth"`);
+    if (signedOut(p, s)) throw new Error("SIGNED OUT at " + p.url() + ': refresh the session in review.json "auth"');
     for (const st of s.steps ?? []) await runStep(p, st);
     let boxes = [];
     for (const [i, t] of (s.marks ?? []).entries()) {
@@ -62,13 +62,13 @@ for (const s of shots) {
     await p.evaluate(([bs, abs]) => {
       for (const b of bs) {
         const d = document.createElement("div"); const pad = 5;
-        Object.assign(d.style, { position: abs ? "absolute" : "fixed", left: `${b.x - pad}px`, top: `${b.y - pad}px`, width: `${b.width + pad * 2}px`, height: `${b.height + pad * 2}px`,
+        Object.assign(d.style, { position: abs ? "absolute" : "fixed", left: (b.x - pad) + "px", top: (b.y - pad) + "px", width: (b.width + pad * 2) + "px", height: (b.height + pad * 2) + "px",
           border: "3px solid #e11d48", borderRadius: "8px", boxShadow: "0 0 0 4px rgba(225,29,72,.18)", zIndex: 2147483647, pointerEvents: "none", boxSizing: "border-box" });
         document.body.appendChild(d);
       }
     }, [boxes, !!s.full]);
-    await p.screenshot({ path: path.join(out, `${s.id}.jpg`), type: "jpeg", quality: 72, fullPage: !!s.full });
-    console.log("ok", s.id, `${boxes.length} mark(s)`);
+    await p.screenshot({ path: path.join(out, s.id + ".jpg"), type: "jpeg", quality: 72, fullPage: !!s.full });
+    console.log("ok", s.id, boxes.length + " mark(s)");
   } catch (e) { failed++; console.log("FAIL", s.id, e.message.split("\n")[0]); }
   await p.close();
 }

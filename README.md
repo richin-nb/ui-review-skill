@@ -49,9 +49,9 @@ ask it to review the UI of your app.
 
 - The app running locally, with realistic demo data, and a way to sign in:
   a session cookie, a Playwright storage state, or localStorage keys.
-- Node 18+ with Playwright in the review folder. Use `npm i -D
-  playwright-core` if Chrome is installed; otherwise `npm i -D playwright &&
-  npx playwright install chromium`.
+- Node 18+ with Playwright 1.65.1 in the review folder. Use `npm i -D
+  playwright-core@1.65.1` if Chrome is installed; otherwise `npm i -D
+  playwright@1.65.1 && npx playwright@1.65.1 install chromium`.
 - Python 3 (standard library only).
 
 ## What works where

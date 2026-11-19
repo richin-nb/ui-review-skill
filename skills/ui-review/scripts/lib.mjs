@@ -15,7 +15,7 @@ export async function loadPlaywright() {
       try { return await import(pathToFileURL(req.resolve(name)).href); } catch {}
     }
   }
-  console.error("Playwright not found. Run `npm i -D playwright-core` (with Chrome installed) or `npm i -D playwright && npx playwright install chromium` in the working directory.");
+  console.error("Playwright not found. Run `npm i -D playwright-core@1.65.1` (with Chrome installed) or `npm i -D playwright@1.65.1 && npx playwright@1.65.1 install chromium` in the working directory.");
   process.exit(2);
 }
 
@@ -33,7 +33,7 @@ export async function launch() {
 /** <dir>/review.json, with defaults. */
 export function readConfig(dir) {
   const file = path.join(dir, "review.json");
-  if (!fs.existsSync(file)) { console.error(`No ${file}. Copy assets/review.example.json there first.`); process.exit(2); }
+  if (!fs.existsSync(file)) { console.error("No " + file + ". Copy assets/review.example.json there first."); process.exit(2); }
   const c = JSON.parse(fs.readFileSync(file, "utf8"));
   c.viewports ??= {};
   c.viewports.desk = { width: 1440, height: 900, scale: 1, ...c.viewports.desk };

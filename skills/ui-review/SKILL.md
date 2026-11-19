@@ -3,7 +3,7 @@ name: ui-review
 description: Reviews a running web app's UI on desktop and phone and publishes annotated screenshots with fix mock-ups to accept or reject. Use for a UI/UX review, design audit, or "go through every screen".
 license: MIT
 metadata:
-  author: Richin Abraham
+  author: Richin Abraham <richin.abraham@neurabyte.net>
   version: "1.0.0"
   tags: [ui, ux, design-review, playwright, screenshots]
 ---
@@ -40,8 +40,8 @@ inside a repo.
 - You need the app running locally with realistic data, and a way to sign
   in. If there's no demo data, offer to seed some first: an empty app hides
   most problems (long lists, wrapping amounts, overdue states).
-- Need Node 18+ and Playwright: `npm i -D playwright-core` in `REVIEW` when
-  Chrome is installed, else `npm i -D playwright && npx playwright install chromium`.
+- Need Node 18+ and Playwright: `npm i -D playwright-core@1.65.1` in `REVIEW` when
+  Chrome is installed, else `npm i -D playwright@1.65.1 && npx playwright@1.65.1 install chromium`.
   Python 3 for the page builder (standard library only).
 - Ask only what you can't find out yourself: the URL, how to sign in, and
   whether any area is out of scope. Find the screens from the router.
@@ -67,7 +67,7 @@ A full run for an app at `http://localhost:5173`:
 
 ```bash
 mkdir -p ui-review && cd ui-review
-npm i -D playwright-core          # Chrome installed; else: npm i -D playwright && npx playwright install chromium
+npm i -D playwright-core@1.65.1          # Chrome installed; else: npm i -D playwright@1.65.1 && npx playwright@1.65.1 install chromium
 cp SKILL_DIR/assets/review.example.json review.json      # then edit app, auth and screens
 node SKILL_DIR/scripts/survey.mjs .                       # step 1
 # step 2: look at raw/*.jpg, write shots.json and mockups/<id>.html
@@ -172,7 +172,8 @@ labels mustn't wrap or overlap, and nothing should be cut off.
 ## 7. Review again
 
 After the fixes, run the survey again on every screen, not just the changed
-ones. Fix any regressions, and gaps in your own work, without asking. Put
+ones. List any regressions and gaps in your own work, with the fix you
+propose for each, and ask the user before fixing them. Put
 anything that is a new design choice on a new review page ("round 2"), with
 a new `storageKey`, and a "Fixed during this pass" list in `strengths`.
 Then repeat from step 6.
@@ -201,8 +202,8 @@ Then repeat from step 6.
 
 | Error | Cause | Solution |
 | --- | --- | --- |
-| `Playwright not found` | Playwright isn't installed in the folder the script runs from, or globally | `cd REVIEW`, then `npm i -D playwright-core` (Chrome installed) or `npm i -D playwright && npx playwright install chromium` |
-| Browser fails to launch | No Chrome at a known path, and Playwright's Chromium isn't installed | Set `CHROME_PATH` to the Chrome binary, or run `npx playwright install chromium` |
+| `Playwright not found` | Playwright isn't installed in the folder the script runs from, or globally | `cd REVIEW`, then `npm i -D playwright-core@1.65.1` (Chrome installed) or `npm i -D playwright@1.65.1 && npx playwright@1.65.1 install chromium` |
+| Browser fails to launch | No Chrome at a known path, and Playwright's Chromium isn't installed | Set `CHROME_PATH` to the Chrome binary, or run `npx playwright@1.65.1 install chromium` |
 | `No .../review.json` | The config is missing from `REVIEW` | Copy `SKILL_DIR/assets/review.example.json` to `REVIEW/review.json` and fill it in |
 | `SIGNED OUT at <url>` | The session in `auth` is missing or expired | Get a fresh cookie or storage state, update `review.json` `auth`, and re-run |
 | `MISS <id> <target>` | `shoot.mjs` found no element for that target | Fix the target in `shots.json` (text, css, role or label), then re-run with that id |
