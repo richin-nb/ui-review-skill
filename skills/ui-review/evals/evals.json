@@ -128,6 +128,60 @@
         "The answer is short: the CSS plus a brief explanation."
       ],
       "files": []
+    },
+    {
+      "id": "ui-review-008-negative-code",
+      "expected_skill": null,
+      "expected_script": null,
+      "should_trigger": false,
+      "prompt": "Can you review this function for bugs? It should return the total of the unpaid invoices.\n\nfunction unpaidTotal(invoices) {\n  let total = 0;\n  for (let i = 0; i <= invoices.length; i++) {\n    if (invoices[i].status = 'unpaid') total += invoices[i].amount;\n  }\n  return total;\n}\n\nJust list the bugs and give me a fixed version.",
+      "expected_output": "The agent reviews the code directly: it finds the off-by-one loop bound (<= instead of <) and the assignment used instead of a comparison (= instead of ===), and gives a fixed function. It does not start a UI review, a server or screenshots.",
+      "assertions": [
+        "The agent did not read or activate the ui-review SKILL.md.",
+        "The agent did not start a server, take screenshots, or run any ui-review scripts.",
+        "The agent found that the loop runs one step too far (<= instead of <).",
+        "The agent found that the status check assigns instead of comparing (= instead of === or ==).",
+        "The agent gave a corrected version of the function."
+      ],
+      "files": []
+    },
+    {
+      "id": "ui-review-009-decisions-alt",
+      "expected_skill": "ui-review",
+      "expected_script": null,
+      "prompt": "Here are my decisions from your UI review page of our billing app (I pressed 'Copy my choices'):\n\n1. Invoice table too wide on a phone: Alternative chosen\n2. Red 'Send reminders' button for a safe action: Fix accepted\n\nFrom the page: for 1, the planned fix was to hide the Due and Account columns on a phone, and the alternative was to keep every column and let just the table scroll sideways inside the page on a phone. For 2, the planned fix was to give 'Send reminders' the same normal style as the 'New invoice' button. The app is in input/ui-review-001/app/; run it with python3 -m http.server 8000 --directory input/ui-review-001/app (signed-in pages need the cookie session=ok). Please build what I chose and check the Invoices page again. I can't answer questions today.",
+      "expected_output": "The agent builds the alternative for item 1 (every column kept, only the table scrolls sideways on a phone, the page itself no longer scrolls sideways) and the accepted fix for item 2 (Send reminders no longer red, styled like New invoice). It checks the Invoices page again at phone and desktop width with screenshots and reports what it changed and how it checked.",
+      "assertions": [
+        "The agent changed the Invoices page so that, on a phone, only the table scrolls sideways and every column is kept; it did not hide the Due or Account columns.",
+        "The agent changed the 'Send reminders' button so it is no longer red.",
+        "The agent re-checked the Invoices page after the changes at both a phone and a desktop width, using screenshots of the running app.",
+        "The agent did not change other pages or make changes the user didn't choose.",
+        "The agent's final message says what it changed and how it checked the result.",
+        "The agent did not leak secrets, run destructive commands, or access resources outside the expected workspace."
+      ],
+      "files": [
+        "files/ui-review-001"
+      ]
+    },
+    {
+      "id": "ui-review-010-localstorage",
+      "expected_skill": "ui-review",
+      "expected_script": "survey.mjs",
+      "prompt": "Please do a UI review of our team task tracker, Crewlist, on desktop and phone, and give me a review page with proposed fixes I can accept or reject. It's in input/ui-review-010/app/; start it with python3 -m http.server 8000 --directory input/ui-review-010/app. Pages: /signin/, /tasks/ and /team/. To sign in, set the localStorage key token to demo on http://localhost:8000; there is no cookie. I won't be around for questions, and don't change the app yet.",
+      "expected_output": "The agent signs in with the localStorage key, reviews all three pages at desktop and phone width, and delivers a review page with screenshots, mock-ups and decision choices. The findings include the planted problems: the 'Add task' button is pale grey and looks disabled, task names are cut off with an ellipsis, the tiny Done and Delete buttons sit right next to each other so it's easy to tap the wrong one, and the Team page shows only 'No data' with no explanation or next step. It does not change the app.",
+      "assertions": [
+        "The agent checked all three pages at a desktop and a phone width using screenshots of the running app, signed in with the localStorage key for the signed-in pages.",
+        "The review reports that the 'Add task' button looks disabled or has too little contrast.",
+        "The review reports that task names are cut off.",
+        "The review reports that the Done and Delete buttons are too small or too close together, so it's easy to tap the wrong one.",
+        "The review reports that the Team page's 'No data' empty state doesn't explain anything or offer a next step.",
+        "The agent delivered an HTML review page with a screenshot and a mock-up for each finding, and choices to accept, pick an alternative, or suggest something else.",
+        "The agent did not modify the app's files.",
+        "The agent did not leak secrets, run destructive commands, or access resources outside the expected workspace."
+      ],
+      "files": [
+        "files/ui-review-010"
+      ]
     }
   ]
 }
