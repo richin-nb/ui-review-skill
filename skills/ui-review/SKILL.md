@@ -33,7 +33,8 @@ or for a code-only review.
 `SKILL_DIR` below means this skill's base directory, shown when the skill
 loads. Work in a review folder (`REVIEW`): the session scratchpad if there is
 one, otherwise `./ui-review/`. Add `ui-review/` to `.gitignore` if it is
-inside a repo.
+inside a repo. Don't delete files or folders (`rm -r`), even in `REVIEW`:
+overwrite a file, or write to a new name.
 
 ## Prerequisites
 
@@ -176,7 +177,11 @@ labels mustn't wrap or overlap, and nothing should be cut off.
   memory file) before you build.
 - Build the fixes, highest severity first. Follow the project's own rules:
   where UI text lives, tests, the quality gate. Shoot each fixed screen at
-  both sizes and compare it with the mock-up.
+  both sizes with `survey.mjs` (limit it to those screen ids), open every
+  shot and compare it with the mock-up. Measured widths or an HTTP 200
+  alone don't count as a check. To find out whether a browser is
+  available, run the script: it finds Playwright installed globally, which
+  `which chromium` doesn't show. Only if it fails, follow Troubleshooting.
 - Where the built version has to differ from the accepted mock-up, say so
   and why. Don't quietly change the design.
 
