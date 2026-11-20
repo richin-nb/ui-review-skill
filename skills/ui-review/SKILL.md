@@ -44,6 +44,11 @@ overwrite a file, or write to a new name.
 - Need Node 18+ and Playwright: `npm i -D playwright-core@1.65.1` in `REVIEW` when
   Chrome is installed, else `npm i -D playwright@1.65.1 && npx playwright@1.65.1 install chromium`.
   Python 3 for the page builder (standard library only).
+- Screenshots are the review. Never review from the source code alone. To
+  find out whether Playwright is there, run `survey.mjs`: it finds a global
+  install that `which chromium` doesn't show. Install it only if the script
+  says it's missing. Installing it in `REVIEW` and building the local HTML
+  page need no approval, because nothing leaves this machine.
 - Ask only what you can't find out yourself: the URL, how to sign in, and
   whether any area is out of scope. Find the screens from the router.
 - If the project has rules on who decides design (a CLAUDE.md, a memory),
