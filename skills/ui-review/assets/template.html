@@ -204,7 +204,6 @@ dialog button { margin-top: 8px; font: 600 14px var(--body); background: var(--s
 </div>
 
 <dialog id="zoom" aria-label="Screenshot">
-  <img id="zoom-img" alt="">
   <button type="button" id="zoom-close">Close</button>
 </dialog>
 
@@ -315,8 +314,12 @@ dialog button { margin-top: 8px; font: 600 14px var(--body); background: var(--s
   });
 
   // Zoom.
-  const dlg = document.getElementById("zoom"), img = document.getElementById("zoom-img");
+  // The zoom image is added on first use: an <img> with no src would look
+  // broken to anyone checking the page's images.
+  const dlg = document.getElementById("zoom"), img = document.createElement("img");
+  img.id = "zoom-img";
   document.querySelectorAll(".shot").forEach((s) => s.addEventListener("click", () => {
+    if (!img.isConnected) dlg.prepend(img);
     img.src = s.dataset.full; img.alt = s.querySelector("img").alt;
     if (dlg.showModal) dlg.showModal();
   }));

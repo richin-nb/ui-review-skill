@@ -1,6 +1,6 @@
 ---
 name: ui-review
-description: Reviews a web app's UI on desktop and phone, publishes screenshots with fix mock-ups to accept or reject, then builds the chosen fixes. Use for a UI/UX review, design audit, or pasted review choices.
+description: Reviews every screen of a web app on desktop and phone, publishes screenshots with fix mock-ups to accept or reject, then builds the chosen fixes. Use for a UI review, design audit, or review choices.
 license: MIT
 metadata:
   author: Richin Abraham <richin.abraham@neurabyte.net>
